@@ -74,6 +74,13 @@
   /* contact form: time stamp for the spam check, simple consent guard */
   var form = d.querySelector('form[data-form]');
   if (form) {
+    var err = /fehler=(\d)/.exec(location.search);
+    if (err) {
+      var note = d.createElement('p'); note.className = 'form-error'; note.setAttribute('role', 'alert');
+      note.textContent = err[1] === '2' ? 'Ihr habt gerade schon mehrere Nachrichten geschickt. Bitte versucht es in zehn Minuten noch einmal oder schreibt per WhatsApp.'
+        : 'Die Nachricht wurde nicht gesendet. Bitte prüft Name, E-Mail und Nachricht und bestätigt die Datenschutzhinweise. Alternativ erreicht ihr Susan per WhatsApp.';
+      form.insertBefore(note, form.firstChild);
+    }
     var t = form.querySelector('input[name="t"]'); if (t) t.value = Math.floor(Date.now() / 1000);
     form.addEventListener('submit', function (e) {
       var c = form.querySelector('input[name="consent"]');

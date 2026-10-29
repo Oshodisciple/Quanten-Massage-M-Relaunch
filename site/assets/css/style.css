@@ -313,3 +313,4 @@ h3{font-family:var(--f-display);font-size:var(--t-lg);line-height:1.2;font-weigh
 .course-hero .lede{margin-top:1.5rem}
 .course-hero-img{border-radius:var(--r-img);overflow:hidden;aspect-ratio:3/2;background:var(--teal-tint)}
 .course-hero-img img{width:100%;height:100%;object-fit:cover}
+.form-error{background:var(--rose-tint);color:#7A2E2E;border-radius:8px;padding:.8rem 1rem;font-size:var(--t-sm)}
