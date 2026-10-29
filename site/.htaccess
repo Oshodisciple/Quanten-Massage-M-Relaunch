@@ -1,0 +1,58 @@
+# Quanten Massage München – Apache settings (Hostnet). Upload together with the site files.
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# always HTTPS and without www
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://quanten-massage-muenchen.de%{REQUEST_URI} [L,R=301]
+# old WordPress addresses -> new pages (keeps search rankings)
+RewriteRule ^kurs-partner-massage/?$ /paarmassage-kurs-muenchen/ [L,R=301]
+RewriteRule ^partnermassage-kurs-buchen/?$ /paarmassage-kurs-muenchen/ [L,R=301]
+RewriteRule ^paar-massage-kurs-buchen/?$ /paarmassage-kurs-muenchen/ [L,R=301]
+RewriteRule ^fq/?$ /fragen-und-antworten/ [L,R=301]
+RewriteRule ^fq-2/?$ /fragen-und-antworten/ [L,R=301]
+RewriteRule ^gutschein/?$ /gutschein/ [L,R=301]
+RewriteRule ^massagegutschein-muenchen/?$ /gutschein/ [L,R=301]
+RewriteRule ^massage-gutscheine-muenchen/?$ /gutschein/ [L,R=301]
+RewriteRule ^massagekurs-gutschein/?$ /gutschein/ [L,R=301]
+RewriteRule ^philosophie-quanten-massage/?$ /susan-kotschwar/ [L,R=301]
+RewriteRule ^massage-techniken-muenchen/?$ /massagen/ [L,R=301]
+RewriteRule ^massageausbildung-kurse/?$ /weitere-kurse/ [L,R=301]
+RewriteRule ^basic-massageausbildung-muenchen/?$ /weitere-kurse/ [L,R=301]
+RewriteRule ^eltern-kind-massagekurs/?$ /weitere-kurse/ [L,R=301]
+RewriteRule ^quanten-massage-kurs/?$ /weitere-kurse/ [L,R=301]
+RewriteRule ^feldenkrais-massage-kurs/?$ /weitere-kurse/ [L,R=301]
+RewriteRule ^impressum-quanten-massage/?$ /impressum/ [L,R=301]
+RewriteRule ^datenschutzerklaerung/?$ /datenschutz/ [L,R=301]
+RewriteRule ^kontakt-quanten-susan/?$ /kontakt/ [L,R=301]
+RewriteRule ^massage-praxis-muenchen-kontakt/?$ /kontakt/ [L,R=301]
+RewriteRule ^google-maps/?$ /kontakt/ [L,R=301]
+RewriteRule ^intuitive-massage-haidhausen/?$ /intuitive-massage-muenchen/ [L,R=301]
+RewriteRule ^aroma-oel-maassage/?$ /aroma-oel-massage/ [L,R=301]
+RewriteRule ^susans-danke-seite/?$ /danke/ [L,R=301]
+</IfModule>
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; media-src 'self'; frame-src https://www.google.com; form-action 'self'; base-uri 'self'; frame-ancestors 'self'"
+</IfModule>
+
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType image/webp "access plus 1 year"
+ExpiresByType video/mp4 "access plus 1 year"
+ExpiresByType video/webm "access plus 1 year"
+ExpiresByType font/woff "access plus 1 year"
+ExpiresByType application/font-woff "access plus 1 year"
+ExpiresByType text/css "access plus 1 month"
+ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+</IfModule>

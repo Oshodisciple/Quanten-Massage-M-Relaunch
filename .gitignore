@@ -1,0 +1,12 @@
+.DS_Store
+*.zip
+*.xml
+!site/sitemap.xml
+*.pdf
+!docs/*.pdf
+videos/
+Bilder 4 relaunch/
+source/
+assets/original/
+node_modules/
+tools/.out/
