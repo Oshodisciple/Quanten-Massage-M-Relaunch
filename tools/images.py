@@ -15,7 +15,6 @@ WIDTHS = [480, 800, 1200, 1600, 2400]
 # slot id -> (source file, optional crop "W:H" centred)
 SLOTS = {
     'hero':  (ROOT / 'videos/hero-poster.jpg', None),
-    'H1':    (B / 'Partner-massage/H1.jpg', None),
     'K1':    (B / 'Partner-massage/K1.jpg', None),
     'K2':    (B / 'Partner-massage/K2.jpg', None),
     'K3a':   (B / 'Partner-massage/K3-a.jpg', '4:5'),
@@ -23,9 +22,7 @@ SLOTS = {
     'K3c':   (B / 'Partner-massage/K3-c.jpg', '4:5'),
     'K3e':   (B / 'Partner-massage/K3-e.jpg', '4:5'),
     'K4':    (B / 'Partner-massage/K4.jpg', None),
-    'K5':    (B / 'Partner-massage/K5.jpg', None),
     'S1':    (B / 'Susan portrait-logo/Warmes Porträt Susan-Kotschwar.png', '4:5'),
-    'S1b':   (B / 'Susan portrait-logo/Susan Portrait Website neu.png', '4:5'),
     'S2':    (B / 'Partner-massage/S2.jpg', None),
     'S3':    (B / 'Partner-massage/S3.jpg', None),
     'T0':    (B / 'treatment pages/T0.jpg', '4:5'),
@@ -40,7 +37,6 @@ SLOTS = {
     'T9':    (B / 'treatment pages/T9.jpg', None),
     'T10':   (B / 'treatment pages/T10.jpg', None),
     'T11':   (B / 'treatment pages/T11.jpg', None),
-    'T13':   (B / 'treatment pages/T4.jpg', '4:5'),
     'A1':    (B / 'neue-behandlungsbilder/Ausbildung-Gruppe.jpg', None),
     'A2':    (B / 'neue-behandlungsbilder/Eltern-Kind.jpg', None),
 }

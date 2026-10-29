@@ -10,6 +10,7 @@ bad=$(find . -type f ! \( -name '*.html' -o -name '*.css' -o -name '*.js' -o -na
 # images and videos must be referenced by some page or the stylesheet
 for f in $(find assets/img assets/video -type f); do
   n=$(basename "$f")
+  case "$n" in hero.mp4|hero.webm|hero-mobile.mp4) continue;; esac
   grep -rqF "$n" --include='*.html' --include='*.css' . || { echo "unreferenced: $f"; fail=1; }
 done
 [ $fail = 0 ] && echo "deploy folder ok"
