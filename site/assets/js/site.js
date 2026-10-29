@@ -4,45 +4,53 @@
   var d = document;
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* header turns solid after scrolling */
-  var hdr = d.querySelector('.site-header');
-  function onScroll() { if (hdr) hdr.classList.toggle('is-solid', window.scrollY > 40); }
+  /* header turns solid after scrolling (home only), mobile dock appears after the first screen */
+  var hdr = d.querySelector('.site-header'), dock = d.querySelector('.dock');
+  function onScroll() {
+    var y = window.scrollY;
+    if (hdr) hdr.classList.toggle('is-solid', y > 40);
+    if (dock) dock.classList.toggle('is-on', y > window.innerHeight * 0.6);
+  }
   onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
 
   /* mobile menu */
   var toggle = d.querySelector('.nav-toggle'), mnav = d.getElementById('mnav');
   if (toggle && mnav) {
     var close = mnav.querySelector('.mnav-close');
-    function setMenu(open) {
-      mnav.classList.toggle('open', open);
+    var setMenu = function (open) {
+      mnav.hidden = !open;
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       d.body.style.overflow = open ? 'hidden' : '';
-      if (open && close) close.focus(); else toggle.focus();
-    }
+      (open ? close : toggle).focus();
+    };
     toggle.addEventListener('click', function () { setMenu(true); });
     close.addEventListener('click', function () { setMenu(false); });
-    mnav.addEventListener('click', function (e) { if (e.target.tagName === 'A') setMenu(false); });
-    d.addEventListener('keydown', function (e) { if (e.key === 'Escape' && mnav.classList.contains('open')) setMenu(false); });
+    mnav.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+    d.addEventListener('keydown', function (e) {
+      if (mnav.hidden) return;
+      if (e.key === 'Escape') setMenu(false);
+      if (e.key === 'Tab') { /* keep focus inside the open menu */
+        var f = mnav.querySelectorAll('a,button'), first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && d.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && d.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
   }
 
-  /* hero video: loads only if the file exists, motion is allowed and data saver is off */
+  /* hero video: only when motion is allowed and data saver is off; poster stays otherwise */
   var vid = d.querySelector('video[data-hero]');
   if (vid) {
     var saver = navigator.connection && navigator.connection.saveData;
+    var btn = d.querySelector('.vid-toggle');
     if (!reduce && !saver) {
-      var wide = window.innerWidth > 760;
       var base = vid.getAttribute('data-base');
-      var sources = wide ? [['webm', 'video/webm'], ['mp4', 'video/mp4']] : [['mobile.mp4', 'video/mp4']];
-      sources.forEach(function (s) {
-        var el = d.createElement('source');
-        el.src = base + (wide ? '.' + s[0] : '-' + s[0]); el.type = s[1]; vid.appendChild(el);
-      });
-      vid.addEventListener('error', function () { vid.remove(); btn && btn.remove(); }, true);
-      var btn = d.querySelector('.vid-toggle');
+      var sources = window.innerWidth > 760 ? [[base + '.webm', 'video/webm'], [base + '.mp4', 'video/mp4']] : [[base + '-mobile.mp4', 'video/mp4']];
+      sources.forEach(function (s) { var el = d.createElement('source'); el.src = s[0]; el.type = s[1]; vid.appendChild(el); });
+      vid.addEventListener('error', function () { vid.remove(); if (btn) btn.remove(); }, true);
       vid.addEventListener('playing', function () {
-        if (btn) { btn.style.display = 'block'; }
+        if (btn) btn.style.display = 'block';
         var img = d.querySelector('.hero-media img'); if (img) img.style.opacity = 0;
-      });
+      }, { once: true });
       if (btn) btn.addEventListener('click', function () {
         if (vid.paused) { vid.play(); btn.textContent = 'Video pausieren'; } else { vid.pause(); btn.textContent = 'Video abspielen'; }
       });
@@ -69,7 +77,9 @@
     var t = form.querySelector('input[name="t"]'); if (t) t.value = Math.floor(Date.now() / 1000);
     form.addEventListener('submit', function (e) {
       var c = form.querySelector('input[name="consent"]');
-      if (c && !c.checked) { e.preventDefault(); c.focus(); alert('Bitte bestätige kurz die Datenschutzhinweise.'); }
+      if (c && !c.checked) { e.preventDefault(); c.focus(); c.setCustomValidity('Bitte bestätige die Datenschutzhinweise.'); c.reportValidity(); }
     });
+    var c2 = form.querySelector('input[name="consent"]');
+    if (c2) c2.addEventListener('change', function () { c2.setCustomValidity(''); });
   }
 })();
