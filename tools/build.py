@@ -190,6 +190,22 @@ def minify_css(s):
     s = re.sub(r'\s+', ' ', s)
     return re.sub(r'\s*([{};,>])\s*', r'\1', s).replace(';}', '}').strip()
 
+# Test build for a preview host such as GitHub Pages:  BASE=/repo-name NOINDEX=1 python3 tools/build.py
+# BASE prefixes every root-relative path (the site then works under https://user.github.io/repo-name/),
+# NOINDEX keeps search engines away from the copy. Never upload a test build to the real server.
+import os
+BASE = os.environ.get('BASE', '').rstrip('/')
+TEST_BUILD = bool(BASE or os.environ.get('NOINDEX'))
+
+def test_build(out):
+    if BASE:
+        out = re.sub(r'((?:href|src|action|data-base|poster)=")/(?!/)', r'\1' + BASE + '/', out)
+        out = re.sub(r'srcset="[^"]*"', lambda m: re.sub(r'(^srcset="|, )/', r'\1' + BASE + '/', m.group(0)), out)
+        out = out.replace('url("/assets/', f'url("{BASE}/assets/')
+    if os.environ.get('NOINDEX'):
+        out = out.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="robots" content="noindex, nofollow">', 1)
+    return out
+
 def main():
     global VERSION, CSS
     CSS = minify_css((SITE / 'assets/css/style.css').read_text(encoding='utf-8')).replace('../fonts/', '/assets/fonts/')
@@ -207,6 +223,8 @@ def main():
         out = head(meta, ld) + '\n' + header(url) + '\n' + main_html + '\n' + footer()
         if '{{' in out:
             raise SystemExit(f'unreplaced token in {p.name}: ' + re.search(r'\{\{[^}]*\}\}', out).group(0))
+        if TEST_BUILD:
+            out = test_build(out)
         target = SITE / (url.strip('/') or '.') / 'index.html' if not url.endswith('.html') else SITE / url.lstrip('/')
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(out, encoding='utf-8')
