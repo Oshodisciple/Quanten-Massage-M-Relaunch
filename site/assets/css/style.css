@@ -322,3 +322,6 @@ h3{font-family:var(--f-display);font-size:var(--t-lg);line-height:1.2;font-weigh
 /* single-column: picture first so treatment pages open with an image */
 @media (max-width:899px){.split>.round,.split>.arch,.split>.frame{order:-1}}
 @media (max-width:999px){.menu-row{grid-template-columns:1fr}.menu-row .p{white-space:normal}}
+@media (max-width:599px){.rail{grid-template-columns:1fr 1fr;gap:1.75rem 1rem}.tile h3{font-size:1.1rem}.tile p{font-size:.9rem}.hero{min-height:88svh}}
+h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+@media (max-width:899px){.split>.media-first{order:-1}}
