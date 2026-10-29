@@ -87,7 +87,7 @@ def head(meta, extra_ld):
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/display.woff2" as="font" type="font/woff2" crossorigin>
-{preload}<link rel="stylesheet" href="/assets/css/style.css?v={VERSION}">
+{preload}<style>{CSS}</style>
 {ld}</head>'''
 
 def header(url):
@@ -116,7 +116,7 @@ def footer():
 <footer class="site-footer">
  <div class="wrap foot-grid">
   <div class="foot-brand">
-   <img src="/assets/img/logo-192.png" width="72" height="50" alt="" loading="lazy">
+   <img src="/assets/img/logo-96.png" srcset="/assets/img/logo-96.png 1x, /assets/img/logo-192.png 2x" width="72" height="50" alt="" loading="lazy">
    <p><b>{b['name']}</b><br>{b['sub']} · {b['person']}</p>
    <address>{b['street']}<br>{b['zip']} {b['city']}-{b['district']}<br>beim Ostbahnhof</address>
   </div>
@@ -183,9 +183,16 @@ def render_tokens(body):
     return body
 
 VERSION = '1'
+CSS = ''
+
+def minify_css(s):
+    s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)
+    s = re.sub(r'\s+', ' ', s)
+    return re.sub(r'\s*([{};,>])\s*', r'\1', s).replace(';}', '}').strip()
 
 def main():
-    global VERSION
+    global VERSION, CSS
+    CSS = minify_css((SITE / 'assets/css/style.css').read_text(encoding='utf-8')).replace('../fonts/', '/assets/fonts/')
     css = (SITE / 'assets/css/style.css').read_bytes() + (SITE / 'assets/js/site.js').read_bytes()
     import hashlib; VERSION = hashlib.sha1(css).hexdigest()[:8]
     pages = []

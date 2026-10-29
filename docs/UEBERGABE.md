@@ -5,7 +5,7 @@ Stand: 29.10.2026. Alle Schritte sind in Git committet (`git log` zeigt den Verl
 ## Was liegt wo
 - `site/`: die fertige Website. Der komplette Inhalt kommt per FTP ins Hauptverzeichnis bei Hostnet, auch die versteckte Datei `.htaccess`.
 - `src/pages/`: Inhalte jeder Seite (Text und Bausteine). **Hier wird geändert, nicht in `site/`.**
-- `tools/build.py`: erzeugt aus `src/pages/` die Seiten in `site/`. Kopf, Menü, Footer, Kontaktdaten, **WhatsApp-Nummer**, Google-Bewertungszeile und Strukturdaten stehen nur hier.
+- `tools/build.py`: erzeugt aus `src/pages/` die Seiten in `site/` und bettet `site/assets/css/style.css` direkt in jede Seite ein. Nach CSS-Änderungen also immer neu bauen. Kopf, Menü, Footer, Kontaktdaten, **WhatsApp-Nummer**, Google-Bewertungszeile und Strukturdaten stehen nur hier.
 - `tools/images.py`: wandelt die freigegebenen Bilder aus `Bilder 4 relaunch/` in AVIF und JPG in mehreren Größen um (macOS-Bordmittel, keine Downloads).
 - Prüfskripte: `tools/check-links.py`, `tools/check-redirects.py`, `tools/check-deploy-folder.sh`.
 - `docs/licences/`: Lizenzen der Schriften (SIL Open Font License).
@@ -63,8 +63,11 @@ Alle drei Prüfungen müssen „ok“ melden, bevor hochgeladen wird.
 - Mobiles Menü: Fokus springt hinein und zurück, Escape schließt, Tab bleibt im Menü.
 - Titel unter 62 Zeichen, Beschreibungen 110 bis 160 Zeichen.
 
+- **Lighthouse mobil (12.x, lokal):** Startseite und Kursseite je 98 Performance, 100 Barrierefreiheit, 100 Best Practices, 100 SEO. LCP 2,3 s, CLS 0. Dafür wurde der Gold-Ton der Buttons auf #C6923F angehoben (der Plan-Wert #B8832F hat mit dunkler Schrift nur 4,25:1 statt 4,5:1), und das CSS wird jetzt direkt in jede Seite eingebettet (kein blockierender Download).
+- Offene Lighthouse-Hinweise zu Caching und Komprimierung betreffen nur den lokalen Testserver. Auf Hostnet übernimmt das die `.htaccess` (mod_expires, mod_deflate).
+
 ## Noch nicht geprüft
-- **Lighthouse** (mobile ≥ 95): noch nicht gelaufen. Lokal oder nach dem Hochladen mit https://pagespeed.web.dev prüfen.
+- **Lighthouse auf dem echten Server:** nach dem Hochladen einmal mit https://pagespeed.web.dev gegenprüfen.
 - **`.htaccess`** läuft erst auf dem Apache-Server bei Hostnet. Nach dem Hochladen die alten Adressen stichprobenartig aufrufen (zum Beispiel `/fq/`, `/hotstone-massage-muenchen/`, `/wp-admin/`).
 - **Kontaktformular:** PHP gibt es lokal nicht. Der echte Mailversand lässt sich nur bei Hostnet testen.
 

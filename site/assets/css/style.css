@@ -6,7 +6,7 @@
 @font-face{font-family:"Hanken Grotesk";src:url("../fonts/text.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
 
 :root{
-  /* palette from SITE-PLAN §4, AA checked: ink on white 14.1, white on teal-dark 5.8, ink on gold 5.5 */
+  /* palette from SITE-PLAN §4, AA checked: ink on white 14.1, white on teal-dark 5.8, ink on gold button 5.1 */
   --white:#FFFFFF;
   --ink:#12302F;
   --ink-2:#3C5655;          /* secondary text, 7.4 on white */
@@ -14,6 +14,7 @@
   --teal:#2AA39B;
   --teal-tint:#EAF5F4;
   --gold:#B8832F;
+  --gold-btn:#C6923F;       /* ink on it 5.1; plain #B8832F is only 4.25 */
   --gold-text:#7A5418;      /* gold for text on white/gold-tint, 6.1 on white */
   --gold-tint:#F8F0E0;
   --rose-tint:#FBEAE9; --rose:#B34C4C;
@@ -77,8 +78,8 @@ h3{font-family:var(--f-display);font-size:var(--t-lg);line-height:1.2;font-weigh
 .btn svg{width:1.15em;height:1.15em;flex:none}
 .btn--primary{background:var(--teal-dark);color:#fff}
 .btn--primary:hover{background:var(--ink);color:#fff}
-.btn--gold,.btn--honey{background:var(--gold);color:var(--ink)}
-.btn--gold:hover,.btn--honey:hover{background:#A57426;color:var(--ink)}
+.btn--gold,.btn--honey{background:var(--gold-btn);color:var(--ink)}
+.btn--gold:hover,.btn--honey:hover{background:#D0A055;color:var(--ink)}
 .btn--ghost{border-color:var(--line-strong);color:var(--ink);background:transparent}
 .btn--ghost:hover{border-color:var(--ink);color:var(--ink)}
 .btn--quiet{background:transparent;color:var(--ink);text-decoration:underline;text-underline-offset:.25em;padding-inline:.6rem}
