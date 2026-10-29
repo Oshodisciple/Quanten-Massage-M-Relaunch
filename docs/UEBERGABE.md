@@ -1,44 +1,77 @@
 # Übergabe: Relaunch quanten-massage-muenchen.de
 
+Stand: 29.10.2026. Alle Schritte sind in Git committet (`git log` zeigt den Verlauf).
+
 ## Was liegt wo
-- `site/` : die fertige statische Website (Phase 1). Kompletter Inhalt dieses Ordners kommt per FTP ins Hauptverzeichnis bei Hostnet (inkl. versteckter Datei `.htaccess`).
-- `docs/` : Bild- und Videoplan.
-- `source/`, `assets/original/` : Ausgangsmaterial.
+- `site/`: die fertige Website. Der komplette Inhalt kommt per FTP ins Hauptverzeichnis bei Hostnet, auch die versteckte Datei `.htaccess`.
+- `src/pages/`: Inhalte jeder Seite (Text und Bausteine). **Hier wird geändert, nicht in `site/`.**
+- `tools/build.py`: erzeugt aus `src/pages/` die Seiten in `site/`. Kopf, Menü, Footer, Kontaktdaten, **WhatsApp-Nummer**, Google-Bewertungszeile und Strukturdaten stehen nur hier.
+- `tools/images.py`: wandelt die freigegebenen Bilder aus `Bilder 4 relaunch/` in AVIF und JPG in mehreren Größen um (macOS-Bordmittel, keine Downloads).
+- Prüfskripte: `tools/check-links.py`, `tools/check-redirects.py`, `tools/check-deploy-folder.sh`.
+- `docs/licences/`: Lizenzen der Schriften (SIL Open Font License).
 
-## Hochladen (wenn du so weit bist)
-1. Sicherung der alten WordPress-Seite anlegen (Dateien + Datenbank).
-2. Inhalt von `site/` per FTP hochladen (Windows/Mac: Cyberduck oder FileZilla). `.htaccess` nicht vergessen (Mac: Cmd+Shift+. zeigt versteckte Dateien).
-3. Prüfen: PHP ist bei Hostnet aktiv (für `kontakt-senden.php`), HTTPS ist eingerichtet.
-4. Testen: alle Seiten, Kontaktformular (Testnachricht), WhatsApp-Link, Stripe-Link, Karte (Klick), alte URLs (werden per `.htaccess` weitergeleitet).
-5. Erst danach Domain/WordPress umstellen. Search Console: `sitemap.xml` einreichen.
+## Ändern und neu bauen
+```
+python3 tools/build.py
+python3 tools/check-links.py
+python3 tools/check-redirects.py
+sh tools/check-deploy-folder.sh
+```
+Alle drei Prüfungen müssen „ok“ melden, bevor hochgeladen wird.
 
-## Fotos ersetzen
-Platzhalter sind benannt nach der Bild-ID aus dem Bildplan (z. B. `S1` = Susan-Porträt). Neues Bild als WebP (oder JPG) unter gleichem Namen in `site/assets/img/` ablegen, z. B. `S1.webp`. Bildplan: `docs/Bild-und-Videoplan.pdf`.
+- **WhatsApp-Nummer ändern:** in `tools/build.py` die Zeile `WHATSAPP = '4915773842126'`, dann neu bauen.
+- **Google-Bewertung aktualisieren:** in `tools/build.py` der Eintrag `'rating'` (Zahl, Anzahl und „Stand Monat Jahr“).
+- **Neues Bild:** Datei in `Bilder 4 relaunch/` legen, in `tools/images.py` unter `SLOTS` eintragen, `python3 tools/images.py` ausführen, dann im Seitentext `{{img:ID|Alternativtext}}` verwenden.
 
-## Hero-Video
-Dateien `hero.webm`, `hero.mp4`, `hero-mobile.mp4` nach `site/assets/video/` legen. Die Seite lädt sie automatisch; ohne Datei bleibt das Standbild. Bei "Bewegung reduzieren" oder Datensparmodus wird nie ein Video geladen.
+## Was sich geändert hat
+- **Design komplett neu:** Weiß als Grundfarbe, Türkis (#13716C / #2AA39B) als Marke, Gold nur für Kurs und Geschenk, Tinte #12302F für Text. Schriften Newsreader (Überschriften) und Hanken Grotesk (Text), selbst gehostet. Alle Text-Farbkombinationen erfüllen WCAG AA.
+- **Startseite** neu: Hero-Video über die ganze Breite (stoppt bei „Bewegung reduzieren“ und Datensparmodus, Pause-Knopf), Kurs-Eckdaten, „Das lernt ihr“, Geschenk-Bereich mit Gutscheinkarte, Ablauf in drei Schritten, Susan, Einzelmassagen, Kontakt.
+- **Partnermassage-Kurs-Seite** neu: 4 Stunden, 280 € pro Paar, Termine nach Vereinbarung, Bezahlung beim Kurs. FAQ neu geschrieben (8 Fragen), die Strukturdaten (FAQPage) werden automatisch aus dem sichtbaren Text erzeugt.
+- **Auf dem Handy** bleibt nach dem ersten Bildschirm unten eine Leiste „Kurs anfragen / Verschenken“ eingeblendet.
+- **Entfernt:** Hot-Stone-Seite, Anzahlungsseite, alle Stripe-Links und Anzahlungshinweise, erfundene Kundenstimmen (Platz dafür ist auskommentiert vorbereitet), Zertifikat (auskommentiert, bis bestätigt).
+- **Google-Zeile** „4,9 von 5 Sternen bei Google, 38 Bewertungen (Stand Oktober 2026)“ als Text mit Link auf Start- und Kursseite, ohne Bewertungs-Schema.
+- **Stammdaten** überall gleich: Elsässer Str. 11, 81667 München, Telefon +49 89 4470678, „Termine nach Vereinbarung, 10 bis 19 Uhr“. LocalBusiness-Strukturdaten auf Start- und Kontaktseite, ohne AggregateRating.
+- **Ausbildungsseite** mit den neuen Bildern (Ausbildung-Gruppe, Feldenkrais, Eltern-Kind).
+- **Impressum und Datenschutz** neu: DDG, Michael Kotschwar verantwortlich, keine Cookies, kein Tracking, keine Online-Zahlung, KI-Bilder gekennzeichnet, Bankdaten entfernt.
+- **Weiterleitungen:** 30 alte Adressen leiten per 301 weiter. Die Weiterleitung von `/gutschein/` auf sich selbst ist entfernt. Neu dazugekommen sind unter anderem `/hotstone-massage-muenchen/`, `/anzahlung/` und `/massage-muenchen-praxis-haidhausen/`. Alte WordPress-Pfade (`wp-admin`, `wp-login.php`, `xmlrpc.php` …) melden „410 Gone“.
+- **Absicherung:** Nur `kontakt-senden.php` darf als PHP laufen. Dotfiles, Backups und Archive sind gesperrt. HSTS ist gesetzt. Das Kontaktskript hat Schutz gegen Header-Injection, Längenlimits, Honeypot, Zeitprüfung und eine Begrenzung auf 3 Nachrichten pro IP in 10 Minuten (gespeichert wird nur ein Hashwert, 10 Minuten lang).
 
-## Schriften
-Aktuell freie Zwischenschriften (TeX Gyre Heros Cn, Lora Italic, Inter), selbst gehostet in `site/assets/fonts/`. Endgültige Schriften: gleiche Dateinamen ersetzen (oder `@font-face` in `css/style.css` anpassen).
+## Entscheidungen, die ich getroffen habe (bitte kurz prüfen)
+- Die bestehenden URLs bleiben (zum Beispiel `/paarmassage-kurs-muenchen/` statt `/partnermassage-kurs/`). Die Kurzformen aus dem Site-Plan leiten weiter.
+- In den Texten steht jetzt „Bezahlt wird beim Kurs“ beziehungsweise beim Gutschein „Bezahlt wird direkt bei Susan“. Grund: keine Online-Zahlung, keine Anzahlung.
+- Einzelmassagen-Liste auf der Startseite zeigt nur die Dauer, keine Preise, bis die Preise bestätigt sind.
+- Das Eltern-Kind-Video (`eltern-kind-massage.mp4`) ist nicht mehr eingebunden, weil die Ausbildungsseite jetzt das neue Bild verwendet. Die Datei ist in der Git-Historie noch vorhanden.
+- Die beiden Susan-Porträts sind fast identisch. Verwendet wird „Warmes Porträt Susan-Kotschwar.png“.
 
-## Datenschutz-Checkliste
-- Keine Cookies, kein Tracking, keine Analytics, keine externen Schriften/Skripte.
-- Google Maps lädt erst nach Klick. WhatsApp ist ein einfacher wa.me-Link. Stripe ist nur ein ausgehender Link.
-- Kontaktformular: Honeypot, Einwilligung, speichert nichts, sendet nur per E-Mail.
-- Impressum und Datenschutz sind Entwürfe mit gelben Markierungen. Vor dem Start rechtlich prüfen lassen.
+## Was du noch liefern oder bestätigen musst
+1. **WhatsApp-Nummer** 4915773842126 bestätigen.
+2. **Impressum:** USt-IdNr. oder Hinweis nach § 19 UStG.
+3. **Datenschutz:** Hostnet (Firmenname und Anschrift laut Vertrag), Auftragsverarbeitungsvertrag, Speicherdauer der Logfiles, WhatsApp privat oder Business.
+4. **Preise prüfen:** Einzelmassagen (Gutscheinseite und Massage-Übersicht) und Ausbildung (240 € für zwei Tage, 120 € pro Tag, 10 % Rabatt, Gruppen bis 6 Personen) stammen von der alten Website.
+5. **Zertifikat** für den Partnerkurs: gibt es eins? Dann blende ich es mit dem Hinweis „Muster“ ein.
+6. **Aktionen für Neukunden:** gibt es welche? Sonst entfällt das Thema.
+7. **Feste Kurstermine vor Weihnachten?** Dann hebe ich sie auf Start- und Kursseite hervor.
+8. **Echte Kundenstimmen** mit Erlaubnis (Vorname oder Initialen). Dann aktiviere ich den vorbereiteten Bereich.
+9. **Google-Profil:** Öffnungszeiten auf „10 bis 19 Uhr, nach Vereinbarung“ angleichen.
+10. Impressum und Datenschutz **rechtlich prüfen lassen**. Das hier ist keine Rechtsberatung.
 
-## Offene Punkte (gelb markiert auf der Seite)
-- Zertifikat: gibt es ein Teilnahme-Zertifikat für den Partnermassage-Kurs? (Alte Website: "mit Zertifikat")
-- Preisliste der Einzelmassagen aus der alten Website übernommen – bitte alle Preise und Dauer prüfen
-- Weitere Kurse: Preise, Gruppengröße (max. 6) und Rabatt aus der alten Website übernommen – bitte prüfen, ob noch aktuell (Alte Seite nannte 70 € Anzahlung)
-- Stripe-Anzahlungslink prüfen: Betrag muss 50 € sein (alte Seiten nannten 70 €). Der alte Link auf der Gutschein-Seite war ein Test-Link und wurde NICHT übernommen.
-- Antwortzeit auf der Danke-Seite ("ein bis zwei Tage") prüfen oder streichen
-- Impressum: Wer ist die Inhaberin / der Inhaber der Praxis (Susan Kotschwar oder Michael Kotschwar)? Alte Seite nannte Michael Kotschwar.
-- Impressum: USt-IdNr. (alte Seite: DE114103514, bitte prüfen, auf wen sie läuft) oder Hinweis nach § 19 UStG
-- Impressum: Berufsbezeichnung, zuständige Behörde/Aufsicht und ggf. Kammer – nur falls zutreffend
-- Impressum: Verantwortliche/r für Inhalte nach § 18 Abs. 2 MStV
-- Impressum: Bildnachweis (eigene Fotos, Stock-/KI-Bilder mit Quelle und Lizenz). Hinweis auf KI-generierte Bilder bei Bedarf.
-- Datenschutz: Verantwortliche/r wie im Impressum
-- Datenschutz: Hosting-Anbieter Hostnet benennen, AV-Vertrag (AVV) abschließen/prüfen, Speicherdauer der Logfiles angeben
-- Datenschutz: Speicherdauer Logfiles
-- Datenschutz: WhatsApp-Nutzung (privat/Business) und Hinweise prüfen
+## Geprüft
+- Alle 1.396 internen Verweise (Links, Bilder, srcset) zeigen auf vorhandene Dateien.
+- Weiterleitungen: keine Schleifen, keine Ketten, alle Ziele existieren.
+- Beim Seitenaufruf gibt es null Anfragen an fremde Server (im Browser für alle 23 Seiten gemessen).
+- 375 px und 768 px: kein seitliches Scrollen auf allen Seiten, jede Seite hat genau eine H1, alle Bilder haben Alternativtexte.
+- Mobiles Menü: Fokus springt hinein und zurück, Escape schließt, Tab bleibt im Menü.
+- Titel unter 62 Zeichen, Beschreibungen 110 bis 160 Zeichen.
+
+## Noch nicht geprüft
+- **Lighthouse** (mobile ≥ 95): noch nicht gelaufen. Lokal oder nach dem Hochladen mit https://pagespeed.web.dev prüfen.
+- **`.htaccess`** läuft erst auf dem Apache-Server bei Hostnet. Nach dem Hochladen die alten Adressen stichprobenartig aufrufen (zum Beispiel `/fq/`, `/hotstone-massage-muenchen/`, `/wp-admin/`).
+- **Kontaktformular:** PHP gibt es lokal nicht. Der echte Mailversand lässt sich nur bei Hostnet testen.
+
+## Hochladen
+1. Sicherung der alten WordPress-Seite anlegen (Dateien und Datenbank). Die alte Seite war kompromittiert: nichts davon in den neuen Webspace übernehmen.
+2. Webspace bei Hostnet leeren oder einen neuen, leeren Ordner als Hauptverzeichnis verwenden.
+3. Prüfskripte laufen lassen (siehe oben).
+4. Inhalt von `site/` per FTP hochladen (Cyberduck oder FileZilla). `.htaccess` nicht vergessen (Mac: Cmd+Shift+. zeigt versteckte Dateien).
+5. Prüfen: HTTPS aktiv, PHP aktiv, Testnachricht über das Formular, WhatsApp-Link, Karte auf der Kontaktseite (lädt erst nach Klick), alte Adressen leiten weiter.
+6. Google Search Console: `https://quanten-massage-muenchen.de/sitemap.xml` einreichen.

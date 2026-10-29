@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /anzahlung/
 Disallow: /danke/
 Sitemap: https://quanten-massage-muenchen.de/sitemap.xml
