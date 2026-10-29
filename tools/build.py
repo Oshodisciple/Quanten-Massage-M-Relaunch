@@ -154,7 +154,26 @@ def picture(spec):
             f'<img src="/assets/img/{slot}-{fallback}.jpg" srcset="{src("jpg")}" sizes="{sizes}" '
             f'width="{big}" height="{h}" alt="{html.escape(alt, quote=True)}" {load}></picture>')
 
+CONTACT_FORM = '''<form class="form" data-form method="post" action="/kontakt-senden.php">
+  <label>Name<input name="name" autocomplete="name" required maxlength="80"></label>
+  <label>E-Mail<input name="email" type="email" autocomplete="email" required maxlength="120"></label>
+  <label>Telefon (optional)<input name="phone" type="tel" autocomplete="tel" maxlength="40"></label>
+  <label>Eure Nachricht<textarea name="message" required maxlength="2000" placeholder="Zum Beispiel: Wunschzeitraum, Anlass, Fragen"></textarea></label>
+  <div class="hp" aria-hidden="true"><label>Bitte leer lassen<input name="website" tabindex="-1" autocomplete="off"></label></div>
+  <input type="hidden" name="t" value="">
+  <label class="check"><input type="checkbox" name="consent" required><span>Ich habe die <a href="/datenschutz/">Datenschutzhinweise</a> gelesen. Meine Angaben werden nur zur Beantwortung meiner Anfrage verwendet.</span></label>
+  <button class="btn btn--primary" type="submit">Nachricht senden</button>
+ </form>'''
+
+def faq_schema(body):
+    """FAQPage JSON-LD built from the visible <details> in .faq, so text and schema never drift apart."""
+    qs = re.findall(r'<details><summary>(.*?)</summary><div>(.*?)</div></details>', body, re.S)
+    strip = lambda s: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', s))).strip()
+    return {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': [
+        {'@type': 'Question', 'name': strip(q), 'acceptedAnswer': {'@type': 'Answer', 'text': strip(a)}} for q, a in qs]}
+
 def render_tokens(body):
+    body = body.replace('{{contactform}}', CONTACT_FORM)
     body = re.sub(r'\{\{img:([^}]*)\}\}', lambda m: picture(m.group(1)), body)
     body = body.replace('{{WA}}', WA)
     body = re.sub(r'\{\{wa:(\w+)\}\}', lambda m: html.escape(wa(m.group(1)), quote=True), body)
@@ -174,7 +193,11 @@ def main():
         meta, body = parse(p)
         url = meta['url']
         ld = [local_business()] if url in ('/', '/kontakt/') else []
-        out = head(meta, ld) + '\n' + header(url) + '\n' + render_tokens(body).strip() + '\n' + footer()
+        body = re.sub(r'<script type="application/ld\+json">.*?</script>', '', body, flags=re.S)
+        main_html = render_tokens(body).strip()
+        if '<details><summary>' in main_html:
+            ld.append(faq_schema(main_html))
+        out = head(meta, ld) + '\n' + header(url) + '\n' + main_html + '\n' + footer()
         if '{{' in out:
             raise SystemExit(f'unreplaced token in {p.name}: ' + re.search(r'\{\{[^}]*\}\}', out).group(0))
         target = SITE / (url.strip('/') or '.') / 'index.html' if not url.endswith('.html') else SITE / url.lstrip('/')

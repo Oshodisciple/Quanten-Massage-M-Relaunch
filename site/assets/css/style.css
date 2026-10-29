@@ -2,8 +2,8 @@
    White first, turquoise brand, gold only for course and gift. Self-hosted fonts, no external requests.
    Type: Newsreader (display, OFL) + Hanken Grotesk (text, OFL). Files in /assets/fonts. */
 
-@font-face{font-family:"Newsreader";src:url("../fonts/display.woff2") format("woff2");font-weight:300 600;font-style:normal;font-display:swap}
-@font-face{font-family:"Hanken Grotesk";src:url("../fonts/text.woff2") format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
+@font-face{font-family:"Newsreader";src:url("../fonts/display.woff2") format("woff2");font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:"Hanken Grotesk";src:url("../fonts/text.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
 
 :root{
   /* palette from SITE-PLAN §4, AA checked: ink on white 14.1, white on teal-dark 5.8, ink on gold 5.5 */
@@ -246,7 +246,7 @@ h3{font-family:var(--f-display);font-size:var(--t-lg);line-height:1.2;font-weigh
 /* Susan */
 .portrait{display:grid;gap:clamp(2rem,5vw,6rem);align-items:center}
 @media (min-width:900px){.portrait{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}}
-.signature{font:italic 300 var(--t-lg) var(--f-display);color:var(--ink-2);margin-top:1.5rem}
+.signature{font:300 var(--t-lg) var(--f-display);color:var(--ink-2);margin-top:1.5rem}
 
 /* contact + form */
 .contact-grid{display:grid;gap:clamp(2.5rem,5vw,6rem)}
@@ -305,3 +305,11 @@ h3{font-family:var(--f-display);font-size:var(--t-lg);line-height:1.2;font-weigh
 @media (max-width:760px){.dock{display:flex}.site-footer{padding-bottom:6rem}}
 
 @media print{.site-header,.dock,.mnav,.vid-toggle{display:none}.hero{min-height:auto;color:var(--ink);background:none}.hero-media{display:none}}
+
+/* course page hero: text left, large picture right */
+.course-hero{padding:clamp(2rem,4vw,3.5rem) 0 0}
+.course-hero-grid{display:grid;gap:clamp(2rem,4vw,4rem);align-items:center}
+@media (min-width:900px){.course-hero-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}}
+.course-hero .lede{margin-top:1.5rem}
+.course-hero-img{border-radius:var(--r-img);overflow:hidden;aspect-ratio:3/2;background:var(--teal-tint)}
+.course-hero-img img{width:100%;height:100%;object-fit:cover}
